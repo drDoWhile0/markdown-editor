@@ -1,13 +1,18 @@
 import { useState } from 'react'
-import type { MarkdownEditorProps } from './types';
 import MarkdownEditor from './components/MarkdownEditor'
 import './App.css'
 
-function App({ value, onChange }: MarkdownEditorProps) {
+function App() {
   const [markdownContent, setMarkdownContent] = useState('# Hello there');
 
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMarkdownContent(e.target.value);
+    console.log(e.target.value);
+    
+  }
+
   return (
-    <MarkdownEditor value={markdownContent} onChange={onChange} />
+    <MarkdownEditor value={markdownContent} onChange={handleChange} />
   )
 }
 
