@@ -1,4 +1,4 @@
 export interface MarkdownEditorProps {
     value: string;
-    onChange: () => void;
+    onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
