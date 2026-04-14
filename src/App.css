@@ -1,3 +1,7 @@
 body {
   background-color: #192b41;
 }
+
+.markdown-editor-preview__container {
+  display: flex;
+}
