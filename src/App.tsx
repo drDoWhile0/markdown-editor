@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { marked } from 'marked';
 import MarkdownEditor from './components/MarkdownEditor'
 import Preview from './components/Preview';
@@ -6,17 +6,31 @@ import './App.css'
 
 function App() {
   const [markdownContent, setMarkdownContent] = useState('# Hello there');
-  const markDownPreviewContent = marked.parse(markdownContent) as string;
+  const [parsedHTML, setParsedHTML] = useState<string>(marked.parse(markdownContent) as string);
+  const timerRef = useRef<number | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMarkdownContent(e.target.value);
     console.log(e.target.value);
   }
 
+  useEffect(() => {
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => setParsedHTML(marked.parse(markdownContent) as string), 300)
+    return () => { 
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+      }
+    }
+  }, [markdownContent]);
+
   return (
     <div className='markdown-editor-preview__container'>
       <MarkdownEditor value={markdownContent} onChange={handleChange} />
-      <Preview _html={markDownPreviewContent } />
+      <Preview _html={parsedHTML} />
     </div>
   )
 }
