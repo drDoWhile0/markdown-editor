@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { marked } from 'marked';
+import 'highlight.js/styles/tokyo-night-dark.css';
 import MarkdownEditor from './components/MarkdownEditor'
 import Preview from './components/Preview';
 import './App.css'
