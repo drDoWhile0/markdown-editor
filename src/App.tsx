@@ -3,6 +3,7 @@ import { marked } from 'marked';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import MarkdownEditor from './components/MarkdownEditor'
 import Preview from './components/Preview';
+import Toolbar from './components/Toolbar';
 import './App.css'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
     <div className='markdown-editor-preview__container'>
       <MarkdownEditor value={markdownContent} onChange={handleChange} />
       <Preview html={parsedHTML} />
+      <Toolbar />
     </div>
   )
 }
