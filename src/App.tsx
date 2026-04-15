@@ -31,7 +31,7 @@ function App() {
   return (
     <div className='markdown-editor-preview__container'>
       <MarkdownEditor value={markdownContent} onChange={handleChange} />
-      <Preview _html={parsedHTML} />
+      <Preview html={parsedHTML} />
     </div>
   )
 }

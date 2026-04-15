@@ -4,5 +4,5 @@ export interface MarkdownEditorProps {
 }
 
 export interface PreviewProps {
-    _html: string;
+    html: string;
 }
