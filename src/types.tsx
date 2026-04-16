@@ -6,3 +6,7 @@ export interface MarkdownEditorProps {
 export interface PreviewProps {
     html: string;
 }
+
+export interface ToolbarProps {
+    onClick: (e: React.ChangeEvent<HTMLButtonElement>) => void;
+}
