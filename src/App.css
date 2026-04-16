@@ -2,6 +2,7 @@ body {
   background-color: #192b41;
 }
 
-.markdown-editor-preview__container {
+.markdown-editor__container-edit-preview {
   display: flex;
 }
+/* TODO: use this color for the preview pane: #152238 */
