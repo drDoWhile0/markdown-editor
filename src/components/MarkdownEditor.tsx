@@ -1,11 +1,13 @@
+import { useEffect, useRef, forwardRef } from 'react';
 import type { MarkdownEditorProps } from '../types';
 
-function MarkdownEditor({ value, onChange }: MarkdownEditorProps) {
+const MarkdownEditor = forwardRef<HTMLTextAreaElement, MarkdownEditorProps>(({ value, onChange }: MarkdownEditorProps, ref) => {
+
     return (
         <div>
-            <textarea value={value} name="markdown-editor" id="markdown-editor" onChange={onChange}></textarea>
+            <textarea ref={ref} value={value} name="markdown-editor" id="markdown-editor" onChange={onChange}></textarea>
         </div>
     );
-}
+});
 
 export default MarkdownEditor;
