@@ -30,10 +30,12 @@ function App() {
   }, [markdownContent]);
 
   return (
-    <div className='markdown-editor-preview__container'>
-      <MarkdownEditor value={markdownContent} onChange={handleChange} />
-      <Preview html={parsedHTML} />
+    <div className='markdown-editor__container'>
       <Toolbar />
+      <div className='markdown-editor__container-edit-preview'>
+        <MarkdownEditor value={markdownContent} onChange={handleChange} />
+        <Preview html={parsedHTML} />
+      </div>
     </div>
   )
 }
