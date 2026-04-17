@@ -1,7 +1,7 @@
-import { useEffect, useRef, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import type { MarkdownEditorProps } from '../types';
 
-const MarkdownEditor = forwardRef<HTMLTextAreaElement, MarkdownEditorProps>(({ value, onChange }: MarkdownEditorProps, ref) => {
+const MarkdownEditor = forwardRef<HTMLTextAreaElement, MarkdownEditorProps>(({ value, onChange }, ref) => {
 
     return (
         <div>
