@@ -8,5 +8,5 @@ export interface PreviewProps {
 }
 
 export interface ToolbarProps {
-    onClick: (e: React.ChangeEvent<HTMLButtonElement>) => void;
+    onClick: (syntax: string) => void;
 }
