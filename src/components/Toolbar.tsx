@@ -1,12 +1,12 @@
 import type { ToolbarProps } from "../types";
 
-function Toolbar() {
+function Toolbar({ onClick }: ToolbarProps) {
     return (
         <div>
-            <button>Bold</button>
-            <button>Italic</button>
-            <button>Code</button>
-            <button>Code Block</button>
+            <button onClick={() => onClick('**')}>Bold</button>
+            <button onClick={() => onClick('_')}>Italic</button>
+            <button onClick={() => onClick('`')}>Code</button>
+            <button onClick={() => onClick('```')}>Code Block</button>
         </div>
     );
 }
