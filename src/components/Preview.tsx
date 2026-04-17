@@ -7,7 +7,7 @@ function Preview({ html }: PreviewProps) {
 
     useEffect(() => {
         if (containerRef.current !== null) {
-            const preCodeElements = containerRef.current.querySelectorAll('pre code');
+            const preCodeElements = containerRef.current.querySelectorAll('code');
             preCodeElements.forEach((element) => {
                 hljs.highlightElement(element as HTMLElement);
             });
