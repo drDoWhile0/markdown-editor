@@ -1,8 +1,15 @@
-body {
-  background-color: #192b41;
+@import "tailwindcss";
+
+.cm-editor,
+.cm-gutters {
+  background-color: #0d0d0d !important;
+  border-style: none;
 }
 
-.markdown-editor__container-edit-preview {
-  display: flex;
+.cm-editor.cm-focused {
+  outline: none !important;
 }
-/* TODO: use this color for the preview pane: #152238 */
+
+.cm-lineNumbers {
+  color: #a34705;
+}
