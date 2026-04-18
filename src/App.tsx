@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { marked, use } from 'marked';
+import { marked } from 'marked';
+import { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import MarkdownEditor from './components/MarkdownEditor'
 import Preview from './components/Preview';
@@ -10,48 +11,38 @@ function App() {
   const [markdownContent, setMarkdownContent] = useState('# Hello there');
   const [parsedHTML, setParsedHTML] = useState<string>(marked.parse(markdownContent) as string);
   const timerRef = useRef<number | null>(null);
-  const cursorPositionRef = useRef<number | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const editorRef = useRef<ReactCodeMirrorRef | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMarkdownContent(e.target.value);
-    console.log(e.target.value);
+  const handleChange = (value: string) => {
+    setMarkdownContent(value);
   }
 
   const handleToolbarAction = (syntax: string) => {
-    if (textareaRef.current !== null) {
-      const startPosition = textareaRef.current.selectionStart;
-      const endPosition = textareaRef.current.selectionEnd;
-      const selectedText = markdownContent.substring(startPosition, endPosition);
-      const preSelecttext = markdownContent.substring(0, startPosition);
-      const postSelecttext = markdownContent.substring(endPosition);
-      cursorPositionRef.current = startPosition + syntax.length;
+    const view = editorRef.current?.view;
+    if (!view) return;
 
-      if (syntax === '```') {
-        setMarkdownContent(preSelecttext + '```\n' + selectedText + '\n```' + postSelecttext)
-      } else {
-        setMarkdownContent(preSelecttext + syntax + selectedText + syntax + postSelecttext);
-      }
+    const { from, to } = view.state.selection.main;
+    const selectedText = view.state.sliceDoc(from, to);
 
+    if (syntax === '```') {
+      view.dispatch(view.state.update({
+        changes: { from, to, insert: '```\n' + selectedText + '\n```' }
+      }));
+    } else {
+      view.dispatch(view.state.update({
+        changes: { from, to, insert: syntax + selectedText + syntax }
+      }));
     }
+
+    view.focus();
   };
-  
-  useEffect(() => {
-    if (textareaRef.current !== null) {
-      textareaRef.current.focus();
-      if (cursorPositionRef.current !== null) {
-        textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-      }
-    }
-  }, [markdownContent])
 
   useEffect(() => {
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
     }
-
-    timerRef.current = setTimeout(() => setParsedHTML(marked.parse(markdownContent) as string), 300)
-    return () => { 
+    timerRef.current = setTimeout(() => setParsedHTML(marked.parse(markdownContent) as string), 300);
+    return () => {
       if (timerRef.current !== null) {
         clearTimeout(timerRef.current);
       }
@@ -65,10 +56,10 @@ function App() {
       </div>
       <div>
         <div className='flex h-screen'>
-          <div className='w-1/2'>
-            <MarkdownEditor ref={textareaRef} value={markdownContent} onChange={handleChange} />
+          <div className='w-1/2 h-full bg-[#0d0d0d] px-[40px] py-[40px]'>
+            <MarkdownEditor ref={editorRef} value={markdownContent} onChange={handleChange} />
           </div>
-          <div className='w-1/2'>
+          <div className='w-1/2 h-full bg-[#121212] px-[40px] py-[40px]'>
             <Preview html={parsedHTML} />
           </div>
         </div>
