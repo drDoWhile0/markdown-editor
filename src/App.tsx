@@ -59,13 +59,21 @@ function App() {
   }, [markdownContent]);
 
   return (
-    <div className='markdown-editor__container'>
-      <Toolbar onClick={handleToolbarAction} />
-      <div className='markdown-editor__container-edit-preview'>
-        <MarkdownEditor ref={textareaRef} value={markdownContent} onChange={handleChange} />
-        <Preview html={parsedHTML} />
+    <>
+      <div>
+        <Toolbar onClick={handleToolbarAction} />
       </div>
-    </div>
+      <div>
+        <div className='flex h-screen'>
+          <div className='w-1/2'>
+            <MarkdownEditor ref={textareaRef} value={markdownContent} onChange={handleChange} />
+          </div>
+          <div className='w-1/2'>
+            <Preview html={parsedHTML} />
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
