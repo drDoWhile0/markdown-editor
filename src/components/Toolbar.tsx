@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ToolbarProps } from "../types";
 import boldIcon from '../assets/icons/Bold.png';
 import italicIcon from '../assets/icons/Italic.png';
@@ -6,9 +7,16 @@ import terminalIcon from '../assets/icons/Terminal.png';
 import previewIcon from '../assets/icons/Preview.png';
 
 function Toolbar({ onClick }: ToolbarProps) {
+    const [isOpen, setIsOpen] = useState(false);
+
     return (
         <div className="bg-[#1E1E1E] text-white flex justify-between py-[16px] px-[40px]">
-            <div className="self-end">
+            <div className="self-end flex items-center">
+                <button onClick={() => setIsOpen(!isOpen)} className="cursor-pointer px-[6px] mx-[16px] flex flex-col gap-1">
+                    <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+                    <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
+                    <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+                </button>
                 <button className="cursor-pointer px-[6px]" onClick={() => onClick('**')}>
                     <img src={boldIcon} alt="Bold" />
                 </button>
@@ -26,7 +34,8 @@ function Toolbar({ onClick }: ToolbarProps) {
                 <button className="cursor-pointer px-[12px]">
                     <img src={previewIcon} alt="Preview" />
                 </button>
-                <button className="bg-[#ff6a00] py-[6px] px-[20px] rounded-sm cursor-pointer">Download</button>
+                <button className="bg-[#121212] text-[#e8e6e6] py-[6px] px-[20px] mx-[12px] rounded-sm cursor-pointer">Save</button>
+                <button className="bg-[#ff6a00] text-[#e8e6e6] py-[6px] px-[20px] rounded-sm cursor-pointer">Download</button>
             </div>
         </div>
     );

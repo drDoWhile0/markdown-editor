@@ -15,7 +15,7 @@ function Preview({ html }: PreviewProps) {
     }, [html])
 
     return(
-        <div ref={containerRef}>
+        <div ref={containerRef} className="prose prose-invert">
             <div dangerouslySetInnerHTML={{ __html: html }} />
         </div>
     );

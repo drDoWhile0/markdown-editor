@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 .cm-editor,
 .cm-gutters {
@@ -12,4 +13,14 @@
 
 .cm-lineNumbers {
   color: #a34705;
+}
+
+.prose strong,
+.prose em {
+  color: #ff6a00;
+}
+
+.prose ul > li::marker,
+.prose ol > li::marker {
+  color: #ff6a00;
 }
