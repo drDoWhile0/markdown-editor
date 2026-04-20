@@ -6,7 +6,7 @@ import codeIcon from '../assets/icons/Code.png';
 import terminalIcon from '../assets/icons/Terminal.png';
 import previewIcon from '../assets/icons/Preview.png';
 
-function Toolbar({ onClick }: ToolbarProps) {
+function Toolbar({ onClick, onSave }: ToolbarProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -34,7 +34,7 @@ function Toolbar({ onClick }: ToolbarProps) {
                 <button className="cursor-pointer px-[12px]">
                     <img src={previewIcon} alt="Preview" />
                 </button>
-                <button className="bg-[#121212] text-[#e8e6e6] py-[6px] px-[20px] mx-[12px] rounded-sm cursor-pointer">Save</button>
+                <button onClick={onSave} className="bg-[#121212] text-[#e8e6e6] py-[6px] px-[20px] mx-[12px] rounded-sm cursor-pointer">Save</button>
                 <button className="bg-[#ff6a00] text-[#e8e6e6] py-[6px] px-[20px] rounded-sm cursor-pointer">Download</button>
             </div>
         </div>
