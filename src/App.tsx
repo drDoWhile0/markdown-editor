@@ -7,11 +7,20 @@ import Preview from './components/Preview';
 import Toolbar from './components/Toolbar';
 import './App.css'
 
+const STORAGE_KEY = 'markdown-content';
+
 function App() {
-  const [markdownContent, setMarkdownContent] = useState('# Hello there');
+  const [markdownContent, setMarkdownContent] = useState(
+    () => localStorage.getItem(STORAGE_KEY) ?? '# Let\'s begin'
+  );
   const [parsedHTML, setParsedHTML] = useState<string>(marked.parse(markdownContent) as string);
   const timerRef = useRef<number | null>(null);
+  const autosaveTimerRef = useRef<number | null>(null);
   const editorRef = useRef<ReactCodeMirrorRef | null>(null);
+
+  const saveContent = () => {
+    localStorage.setItem(STORAGE_KEY, markdownContent);
+  }
 
   const handleChange = (value: string) => {
     setMarkdownContent(value);
@@ -38,21 +47,21 @@ function App() {
   };
 
   useEffect(() => {
-    if (timerRef.current !== null) {
-      clearTimeout(timerRef.current);
-    }
+    if (timerRef.current !== null) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setParsedHTML(marked.parse(markdownContent) as string), 300);
-    return () => {
-      if (timerRef.current !== null) {
-        clearTimeout(timerRef.current);
-      }
-    }
+    return () => { if (timerRef.current !== null) clearTimeout(timerRef.current); }
+  }, [markdownContent]);
+
+  useEffect(() => {
+    if (autosaveTimerRef.current !== null) clearTimeout(autosaveTimerRef.current);
+    autosaveTimerRef.current = setTimeout(saveContent, 3000);
+    return () => { if (autosaveTimerRef.current !== null) clearTimeout(autosaveTimerRef.current); }
   }, [markdownContent]);
 
   return (
     <>
       <div>
-        <Toolbar onClick={handleToolbarAction} />
+        <Toolbar onClick={handleToolbarAction} onSave={saveContent} />
       </div>
       <div>
         <div className='flex h-screen'>
