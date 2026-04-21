@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Loader2, Check } from "lucide-react";
 import type { ToolbarProps } from "../types";
 import boldIcon from '../assets/icons/Bold.png';
 import italicIcon from '../assets/icons/Italic.png';
@@ -6,7 +7,7 @@ import codeIcon from '../assets/icons/Code.png';
 import terminalIcon from '../assets/icons/Terminal.png';
 import previewIcon from '../assets/icons/Preview.png';
 
-function Toolbar({ onClick, onSave }: ToolbarProps) {
+function Toolbar({ onClick, onSave, saveStatus }: ToolbarProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -34,7 +35,11 @@ function Toolbar({ onClick, onSave }: ToolbarProps) {
                 <button className="cursor-pointer px-[12px]">
                     <img src={previewIcon} alt="Preview" />
                 </button>
-                <button onClick={onSave} className="bg-[#121212] text-[#e8e6e6] py-[6px] px-[20px] mx-[12px] rounded-sm cursor-pointer">Save</button>
+                <button onClick={onSave} className="bg-[#121212] text-[#e8e6e6] py-[6px] px-[10px] mx-[12px] rounded-sm cursor-pointer">Save</button>
+                <div className="mr-[20px]">
+                    {saveStatus === 'saving' && <Loader2 className="animate-spin" />}
+                    {saveStatus === 'saved' && <Check className="text-[#22c55e]" />}
+                </div>
                 <button className="bg-[#ff6a00] text-[#e8e6e6] py-[6px] px-[20px] rounded-sm cursor-pointer">Download</button>
             </div>
         </div>

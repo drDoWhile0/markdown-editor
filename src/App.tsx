@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { marked } from 'marked';
 import { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import type { Session } from '@supabase/supabase-js';
+import type { SaveStatus } from './types';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import MarkdownEditor from './components/MarkdownEditor'
 import Preview from './components/Preview';
@@ -14,6 +15,7 @@ function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [markdownContent, setMarkdownContent] = useState('');
   const [parsedHTML, setParsedHTML] = useState('');
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const timerRef = useRef<number | null>(null);
   const autosaveTimerRef = useRef<number | null>(null);
   const editorRef = useRef<ReactCodeMirrorRef | null>(null);
@@ -32,29 +34,26 @@ function App() {
         .select('content')
         .eq('user_id', session.user.id)
         .single();
-      setMarkdownContent(data?.content ?? '# Hello there');
+      if (markdownContent === '') {
+        setMarkdownContent(data?.content ?? '# Hello there');
+      }
     };
     loadDocument();
   }, [session]);
 
   const saveContent = async () => {
     if (!session) return;
-    const { data } = await supabase
-      .from('documents')
-      .select('id')
-      .eq('user_id', session.user.id)
-      .single();
+    setSaveStatus('saving');
 
-    if (data) {
-      await supabase
-        .from('documents')
-        .update({ content: markdownContent, updated_at: new Date().toISOString() })
-        .eq('user_id', session.user.id);
-    } else {
-      await supabase
-        .from('documents')
-        .insert({ user_id: session.user.id, content: markdownContent });
-    }
+    await supabase
+      .from('documents')
+      .upsert( 
+        { user_id: session.user.id, content: markdownContent, updated_at: new Date().toISOString() }, 
+        { onConflict: 'user_id' }
+      );
+
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
   const handleChange = (value: string) => setMarkdownContent(value);
@@ -90,7 +89,7 @@ function App() {
   return (
     <>
       <div className='bg-[#121212]'>
-        <Toolbar onClick={handleToolbarAction} onSave={saveContent} />
+        <Toolbar onClick={handleToolbarAction} onSave={saveContent} saveStatus={saveStatus} />
       </div>
       <div className='flex h-screen'>
         <div className='w-1/2 h-full bg-[#0d0d0d] px-[40px] py-[40px]'>
