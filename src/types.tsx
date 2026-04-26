@@ -14,3 +14,23 @@ export interface ToolbarProps {
     onSave: () => void;
     saveStatus: SaveStatus;
 }
+
+export interface MarkdownDocument {
+    id: string;
+    title: string;
+    content: string;
+    folder_id: string | null;
+    updated_at: string;
+}
+
+export interface Folder {
+    id: string;
+    name: string;
+    parent_id: string | null;
+}
+
+export interface SidebarProps {
+    documents: MarkdownDocument[];
+    activeDocument: MarkdownDocument | null;
+    onSelectDocument: (doc: MarkdownDocument) => void;
+}
