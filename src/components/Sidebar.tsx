@@ -1,3 +1,4 @@
+import type { SidebarProps } from '../types';
 import TextField from '@mui/material/TextField';
 import NewFile from '../assets/icons/NewFile.png';
 import NewFolder from '../assets/icons/NewFolder.png';
@@ -5,7 +6,7 @@ import Sort from '../assets/icons/Sort.png';
 import Trash from '../assets/icons/Trash.png'
 import Settings from '../assets/icons/Settings.png';
 
-function SideBar() {
+function SideBar({ documents, activeDocument, onSelectDocument }: SidebarProps) {
     return (
         <div className='px-[40px]'>
             <div className='sidebar-component__search justify-self-center my-6'>
@@ -51,12 +52,17 @@ function SideBar() {
                     <img src={Trash} alt="Deleted Projects" />
                 </button>
             </div>
-            {/* TODO: take all related files from current user, and map them to this list */}
+            
             <ul className='text-[#e8e6e6]'>
-                <li className='my-4'>Project 1</li>
-                <li className='my-4'>Project 2</li>
-                <li className='my-4'>Project 3</li>
-                <li className='my-4'>Project 4</li>
+                {documents.map((doc) => (
+                    <li
+                        key={doc.id}
+                        onClick={() => onSelectDocument(doc)}
+                        className={`my-4 cursor-pointer ${activeDocument?.id === doc.id ? 'text-[#ff6a00]' : ''}`}
+                    >
+                       {doc.title} 
+                    </li>
+                ))}
             </ul>
 
             <div>
