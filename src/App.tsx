@@ -7,6 +7,7 @@ import 'highlight.js/styles/tokyo-night-dark.css';
 import MarkdownEditor from './components/MarkdownEditor'
 import Preview from './components/Preview';
 import Toolbar from './components/Toolbar';
+import SideBar from './components/Sidebar';
 import Auth from './components/Auth';
 import { supabase } from './supabaseClient';
 import './App.css'
@@ -92,6 +93,9 @@ function App() {
         <Toolbar onClick={handleToolbarAction} onSave={saveContent} saveStatus={saveStatus} />
       </div>
       <div className='flex h-screen'>
+        <div className='sidebar-component bg-[#1E1E1E]'>
+          <SideBar />
+        </div>
         <div className='w-1/2 h-full bg-[#0d0d0d] px-[40px] py-[40px]'>
           <MarkdownEditor ref={editorRef} value={markdownContent} onChange={handleChange} />
         </div>
