@@ -7,7 +7,7 @@ import Sort from '../assets/icons/Sort.png';
 import Trash from '../assets/icons/Trash.png'
 import Settings from '../assets/icons/Settings.png';
 
-function SideBar({ documents, activeDocument, onSelectDocument, onNewDocument, onRenameDocument }: SidebarProps) {
+function SideBar({ documents, activeDocument, onSelectDocument, onNewDocument, onRenameDocument, onDeleteDocument }: SidebarProps) {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingTitle, setEditingTitle] = useState('');
 
@@ -52,7 +52,7 @@ function SideBar({ documents, activeDocument, onSelectDocument, onNewDocument, o
                 <button className='cursor-pointer'>
                     <img src={Sort} alt="Sort Order" />
                 </button>
-                <button className='cursor-pointer px-[6px]'>
+                <button className='cursor-pointer px-[6px]' onClick={() => activeDocument && onDeleteDocument(activeDocument.id)}>
                     <img src={Trash} alt="Delete Project" />
                 </button>
             </div>
