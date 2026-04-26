@@ -19,6 +19,7 @@ function App() {
   const [activeDocument, setActiveDocument] = useState<MarkdownDocument | null>(null);
   const [parsedHTML, setParsedHTML] = useState('');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [showPreview, setShowPreview] = useState(true);
   const timerRef = useRef<number | null>(null);
   const autosaveTimerRef = useRef<number | null>(null);
   const editorRef = useRef<ReactCodeMirrorRef | null>(null);
@@ -142,8 +143,14 @@ function App() {
   return (
     <>
       <div className='bg-[#121212]'>
-        <Toolbar onClick={handleToolbarAction} onSave={saveContent} saveStatus={saveStatus} />
+        <Toolbar 
+          onClick={handleToolbarAction} 
+          onSave={saveContent} 
+          onTogglePreview={() => setShowPreview(prev => !prev)}
+          saveStatus={saveStatus} 
+        />
       </div>
+
       <div className='flex h-screen'>
         <div className='sidebar-component bg-[#1E1E1E]'>
           <SideBar
@@ -155,12 +162,17 @@ function App() {
             onDeleteDocument={deleteDocument}
           />
         </div>
-        <div className='w-1/2 h-full bg-[#0d0d0d] px-[40px] py-[40px]'>
+
+        <div className={`${showPreview ? 'w-1/2' : 'w-full'} h-full bg-[#0d0d0d] px-[40px] py-[40px]`}>
           <MarkdownEditor ref={editorRef} value={activeDocument?.content ?? ''} onChange={handleChange} />
         </div>
-        <div className='w-1/2 h-full bg-[#121212] px-[40px] py-[40px]'>
-          <Preview html={parsedHTML} />
-        </div>
+
+        {showPreview && (
+          <div className='w-1/2 h-full bg-[#121212] px-[40px] py-[40px]'>
+            <Preview html={parsedHTML} />
+          </div>
+        )}
+
       </div>
     </>
   )
