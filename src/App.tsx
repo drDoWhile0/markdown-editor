@@ -62,6 +62,21 @@ function App() {
       setActiveDocument(data);
   }
 
+  const deleteDocument = async (id: string) => {
+
+    await supabase
+      .from('documents')
+      .delete()
+      .eq('id', id);
+
+      const remainingDocs = documents.filter(d => d.id !== id);
+      setDocuments(remainingDocs);
+
+      if (activeDocument?.id === id) {
+        setActiveDocument(remainingDocs.length > 0 ? remainingDocs[0] : null);
+      }
+  }
+
   const renameDocument = async (id: string, newTitle: string) => {
     await supabase
       .from('documents')
@@ -137,6 +152,7 @@ function App() {
             onSelectDocument={setActiveDocument}
             onNewDocument={createDocument}
             onRenameDocument={renameDocument}
+            onDeleteDocument={deleteDocument}
           />
         </div>
         <div className='w-1/2 h-full bg-[#0d0d0d] px-[40px] py-[40px]'>
