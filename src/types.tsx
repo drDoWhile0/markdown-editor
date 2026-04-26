@@ -12,6 +12,8 @@ export interface PreviewProps {
 export interface ToolbarProps {
     onClick: (syntax: string) => void;
     onSave: () => void;
+    onTogglePreview: () => void;
+    onToggleSidebar: () => void;
     saveStatus: SaveStatus;
 }
 
@@ -35,4 +37,5 @@ export interface SidebarProps {
     onSelectDocument: (doc: MarkdownDocument) => void;
     onNewDocument: () => void;
     onRenameDocument: (id: string, newTitle: string) => void;
+    onDeleteDocument: (id: string) => void;
 }

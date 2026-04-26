@@ -7,7 +7,7 @@ import codeIcon from '../assets/icons/Code.png';
 import terminalIcon from '../assets/icons/Terminal.png';
 import previewIcon from '../assets/icons/Preview.png';
 
-function Toolbar({ onClick, onSave, saveStatus }: ToolbarProps) {
+function Toolbar({ onClick, onSave, onTogglePreview, onToggleSidebar, saveStatus }: ToolbarProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -15,7 +15,7 @@ function Toolbar({ onClick, onSave, saveStatus }: ToolbarProps) {
 
             <div className="self-end flex items-center">
 
-                <button onClick={() => setIsOpen(!isOpen)} className="cursor-pointer px-[6px] mx-[16px] flex flex-col gap-1">
+                <button onClick={() => { setIsOpen(!isOpen); onToggleSidebar(); }} className="cursor-pointer px-[6px] mx-[16px] flex flex-col gap-1">
                     <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
                     <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
                     <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
@@ -37,7 +37,7 @@ function Toolbar({ onClick, onSave, saveStatus }: ToolbarProps) {
 
             <div className="self-end flex items-center">
 
-                <button className="cursor-pointer px-[12px]">
+                <button className="cursor-pointer px-[12px]" onClick={onTogglePreview}>
                     <img src={previewIcon} alt="Preview" />
                 </button>
                 <button onClick={onSave} className="bg-[#121212] text-[#e8e6e6] py-[6px] px-[10px] mx-[12px] rounded-sm cursor-pointer">Save</button>
