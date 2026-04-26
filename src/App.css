@@ -24,3 +24,11 @@
 .prose ol > li::marker {
   color: #ff6a00;
 }
+
+.sidebar-component {
+  min-width: 300px;
+}
+
+.sidebar-component__search input {
+  padding: 8px 40px;
+}

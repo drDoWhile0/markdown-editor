@@ -1,9 +1,10 @@
 import CodeMirror, { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { Prec } from '@codemirror/state';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
-import { tags } from '@lezer/highlight';
 import { markdown } from '@codemirror/lang-markdown';
 import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night';
+import { EditorView } from '@uiw/react-codemirror';
+import { tags } from '@lezer/highlight';
 import { forwardRef } from 'react';
 import type { MarkdownEditorProps } from '../types';
 
@@ -17,7 +18,7 @@ const MarkdownEditor = forwardRef<ReactCodeMirrorRef, MarkdownEditorProps>(({ va
             ref={ref} 
             value={value} 
             onChange={onChange} 
-            extensions={[markdown(), Prec.highest(syntaxHighlighting(customHighlight))]}
+            extensions={[markdown(), Prec.highest(syntaxHighlighting(customHighlight)), EditorView.lineWrapping]}
             theme={tokyoNight}
             height='100%'
             className='h-full w-full'

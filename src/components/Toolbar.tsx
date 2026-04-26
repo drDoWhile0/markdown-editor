@@ -12,7 +12,9 @@ function Toolbar({ onClick, onSave, saveStatus }: ToolbarProps) {
 
     return (
         <div className="bg-[#1E1E1E] text-white flex justify-between py-[16px] px-[40px]">
+
             <div className="self-end flex items-center">
+
                 <button onClick={() => setIsOpen(!isOpen)} className="cursor-pointer px-[6px] mx-[16px] flex flex-col gap-1">
                     <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
                     <span className={`block w-6 h-0.5 bg-[#474747] transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
@@ -30,8 +32,11 @@ function Toolbar({ onClick, onSave, saveStatus }: ToolbarProps) {
                 <button className="cursor-pointer px-[6px]" onClick={() => onClick('```')}>
                     <img src={terminalIcon} alt="Code Block" />
                 </button>
+
             </div>
+
             <div className="self-end flex items-center">
+
                 <button className="cursor-pointer px-[12px]">
                     <img src={previewIcon} alt="Preview" />
                 </button>
@@ -41,7 +46,9 @@ function Toolbar({ onClick, onSave, saveStatus }: ToolbarProps) {
                     {saveStatus === 'saved' && <Check className="text-[#22c55e]" />}
                 </div>
                 <button className="bg-[#ff6a00] text-[#e8e6e6] py-[6px] px-[20px] rounded-sm cursor-pointer">Download</button>
+                
             </div>
+
         </div>
     );
 }

@@ -2,18 +2,21 @@ import { useState, useRef, useEffect } from 'react'
 import { marked } from 'marked';
 import { type ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import type { Session } from '@supabase/supabase-js';
-import type { SaveStatus } from './types';
+import type { SaveStatus, MarkdownDocument, Folder } from './types';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import MarkdownEditor from './components/MarkdownEditor'
 import Preview from './components/Preview';
 import Toolbar from './components/Toolbar';
+import SideBar from './components/Sidebar';
 import Auth from './components/Auth';
 import { supabase } from './supabaseClient';
 import './App.css'
 
 function App() {
   const [session, setSession] = useState<Session | null>(null);
-  const [markdownContent, setMarkdownContent] = useState('');
+  const [documents, setDocuments] = useState<MarkdownDocument[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [activeDocument, setActiveDocument] = useState<MarkdownDocument | null>(null);
   const [parsedHTML, setParsedHTML] = useState('');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const timerRef = useRef<number | null>(null);
@@ -31,32 +34,67 @@ function App() {
     const loadDocument = async () => {
       const { data } = await supabase
         .from('documents')
-        .select('content')
+        .select('*')
         .eq('user_id', session.user.id)
-        .single();
-      if (markdownContent === '') {
-        setMarkdownContent(data?.content ?? '# Hello there');
+        .order('updated_at', { ascending: false });
+      if (data && data.length > 0) {
+        setDocuments(data);
+        setActiveDocument(data[0]);
+      } else {
+        // no documents yet - todo: create a first doc here later
       }
     };
     loadDocument();
   }, [session]);
 
-  const saveContent = async () => {
+  const createDocument = async () => {
     if (!session) return;
+
+    const { data, error } = await supabase
+      .from('documents')
+      .insert({ user_id: session.user.id, title: 'Untitled', content: '' })
+      .select()
+      .single();
+
+      if (error || !data) return;
+
+      setDocuments(docs => [data, ...docs]);
+      setActiveDocument(data);
+  }
+
+  const renameDocument = async (id: string, newTitle: string) => {
+    await supabase
+      .from('documents')
+      .update({ title: newTitle })
+      .eq('id', id);
+
+      setDocuments(docs => docs.map(d => d.id === id ? { ...d, title: newTitle } : d));
+      if (activeDocument?.id === id) {
+        setActiveDocument(prev => prev ? { ...prev, title: newTitle } : prev);
+      }
+  }
+
+  const saveContent = async () => {
+    if (!session || !activeDocument) return;
     setSaveStatus('saving');
 
     await supabase
       .from('documents')
       .upsert( 
-        { user_id: session.user.id, content: markdownContent, updated_at: new Date().toISOString() }, 
-        { onConflict: 'user_id' }
+        { id: activeDocument.id, user_id: session.user.id, content: activeDocument.content, updated_at: new Date().toISOString() }, 
+        { onConflict: 'id' }
       );
 
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
-  const handleChange = (value: string) => setMarkdownContent(value);
+  const handleChange = (value: string) => {
+    if (!activeDocument) return;
+    const updated = { ...activeDocument, content: value };
+    setActiveDocument(updated);
+    setDocuments(docs => docs.map(d => d.id === updated.id ? updated : d));
+  }
 
   const handleToolbarAction = (syntax: string) => {
     const view = editorRef.current?.view;
@@ -73,16 +111,16 @@ function App() {
 
   useEffect(() => {
     if (timerRef.current !== null) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setParsedHTML(marked.parse(markdownContent) as string), 300);
+    timerRef.current = setTimeout(() => setParsedHTML(marked.parse(activeDocument?.content ?? '') as string), 300);
     return () => { if (timerRef.current !== null) clearTimeout(timerRef.current); };
-  }, [markdownContent]);
+  }, [activeDocument?.content]);
 
   useEffect(() => {
     if (!session) return;
     if (autosaveTimerRef.current !== null) clearTimeout(autosaveTimerRef.current);
     autosaveTimerRef.current = setTimeout(saveContent, 2000);
     return () => { if (autosaveTimerRef.current !== null) clearTimeout(autosaveTimerRef.current); };
-  }, [markdownContent]);
+  }, [activeDocument?.content]);
 
   if (!session) return <Auth />;
 
@@ -92,8 +130,17 @@ function App() {
         <Toolbar onClick={handleToolbarAction} onSave={saveContent} saveStatus={saveStatus} />
       </div>
       <div className='flex h-screen'>
+        <div className='sidebar-component bg-[#1E1E1E]'>
+          <SideBar
+            documents={documents}
+            activeDocument={activeDocument}
+            onSelectDocument={setActiveDocument}
+            onNewDocument={createDocument}
+            onRenameDocument={renameDocument}
+          />
+        </div>
         <div className='w-1/2 h-full bg-[#0d0d0d] px-[40px] py-[40px]'>
-          <MarkdownEditor ref={editorRef} value={markdownContent} onChange={handleChange} />
+          <MarkdownEditor ref={editorRef} value={activeDocument?.content ?? ''} onChange={handleChange} />
         </div>
         <div className='w-1/2 h-full bg-[#121212] px-[40px] py-[40px]'>
           <Preview html={parsedHTML} />
