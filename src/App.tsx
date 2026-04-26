@@ -20,6 +20,7 @@ function App() {
   const [parsedHTML, setParsedHTML] = useState('');
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [showPreview, setShowPreview] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
   const timerRef = useRef<number | null>(null);
   const autosaveTimerRef = useRef<number | null>(null);
   const editorRef = useRef<ReactCodeMirrorRef | null>(null);
@@ -147,21 +148,25 @@ function App() {
           onClick={handleToolbarAction} 
           onSave={saveContent} 
           onTogglePreview={() => setShowPreview(prev => !prev)}
+          onToggleSidebar={() => setShowSidebar(prev => !prev)}
           saveStatus={saveStatus} 
         />
       </div>
 
       <div className='flex h-screen'>
-        <div className='sidebar-component bg-[#1E1E1E]'>
-          <SideBar
-            documents={documents}
-            activeDocument={activeDocument}
-            onSelectDocument={setActiveDocument}
-            onNewDocument={createDocument}
-            onRenameDocument={renameDocument}
-            onDeleteDocument={deleteDocument}
-          />
-        </div>
+
+        {showSidebar && (
+          <div className='sidebar-component bg-[#1E1E1E]'>
+            <SideBar
+              documents={documents}
+              activeDocument={activeDocument}
+              onSelectDocument={setActiveDocument}
+              onNewDocument={createDocument}
+              onRenameDocument={renameDocument}
+              onDeleteDocument={deleteDocument}
+            />
+          </div>
+        )}
 
         <div className={`${showPreview ? 'w-1/2' : 'w-full'} h-full bg-[#0d0d0d] px-[40px] py-[40px]`}>
           <MarkdownEditor ref={editorRef} value={activeDocument?.content ?? ''} onChange={handleChange} />
