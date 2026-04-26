@@ -12,6 +12,7 @@ export interface PreviewProps {
 export interface ToolbarProps {
     onClick: (syntax: string) => void;
     onSave: () => void;
+    onTogglePreview: () => void;
     saveStatus: SaveStatus;
 }
 
