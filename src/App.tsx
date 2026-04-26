@@ -47,6 +47,33 @@ function App() {
     loadDocument();
   }, [session]);
 
+  const createDocument = async () => {
+    if (!session) return;
+
+    const { data, error } = await supabase
+      .from('documents')
+      .insert({ user_id: session.user.id, title: 'Untitled', content: '' })
+      .select()
+      .single();
+
+      if (error || !data) return;
+
+      setDocuments(docs => [data, ...docs]);
+      setActiveDocument(data);
+  }
+
+  const renameDocument = async (id: string, newTitle: string) => {
+    await supabase
+      .from('documents')
+      .update({ title: newTitle })
+      .eq('id', id);
+
+      setDocuments(docs => docs.map(d => d.id === id ? { ...d, title: newTitle } : d));
+      if (activeDocument?.id === id) {
+        setActiveDocument(prev => prev ? { ...prev, title: newTitle } : prev);
+      }
+  }
+
   const saveContent = async () => {
     if (!session || !activeDocument) return;
     setSaveStatus('saving');
@@ -108,6 +135,8 @@ function App() {
             documents={documents}
             activeDocument={activeDocument}
             onSelectDocument={setActiveDocument}
+            onNewDocument={createDocument}
+            onRenameDocument={renameDocument}
           />
         </div>
         <div className='w-1/2 h-full bg-[#0d0d0d] px-[40px] py-[40px]'>
