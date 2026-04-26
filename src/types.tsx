@@ -33,4 +33,6 @@ export interface SidebarProps {
     documents: MarkdownDocument[];
     activeDocument: MarkdownDocument | null;
     onSelectDocument: (doc: MarkdownDocument) => void;
+    onNewDocument: () => void;
+    onRenameDocument: (id: string, newTitle: string) => void;
 }
