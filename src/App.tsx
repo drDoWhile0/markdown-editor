@@ -97,7 +97,7 @@ function App() {
       }
   }
 
-  const moveDocument = async (docId: string, folderId: string) => {
+  const moveDocument = async (docId: string, folderId: string | null) => {
     await supabase
       .from('documents')
       .update({ folder_id: folderId })
