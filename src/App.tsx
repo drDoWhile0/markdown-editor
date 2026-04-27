@@ -39,12 +39,18 @@ function App() {
         .select('*')
         .eq('user_id', session.user.id)
         .order('updated_at', { ascending: false });
+
       if (data && data.length > 0) {
         setDocuments(data);
         setActiveDocument(data[0]);
-      } else {
-        // no documents yet - todo: create a first doc here later
-      }
+      } 
+
+      const { data: folderData } = await supabase
+        .from('folders')
+        .select('*')
+        .eq('user_id', session.user.id);
+
+        if (folderData) setFolders(folderData)
     };
     loadDocument();
   }, [session]);
@@ -89,6 +95,38 @@ function App() {
       if (activeDocument?.id === id) {
         setActiveDocument(prev => prev ? { ...prev, title: newTitle } : prev);
       }
+  }
+
+  const createFolder = async() => {
+    if (!session) return;
+
+    const { data, error } = await supabase
+      .from('folders')
+      .insert({ user_id: session.user.id, name: 'New Folder', parent_id: null })
+      .select()
+      .single();
+
+      if (error || !data) return;
+      setFolders(prev => [...prev, data]);
+  }
+
+  const renameFolder = async (id: string, newName: string) => {
+    await supabase
+      .from('folders')
+      .update({ name: newName })
+      .eq('id', id)
+
+      setFolders(prev => prev.map(f => f.id === id ? { ...f, name: newName } : f));
+  }
+
+  const deleteFolder = async (id: string) => {
+    await supabase
+      .from('folders')
+      .delete()
+      .eq('id', id)
+
+      setFolders(prev => prev.filter(f => f.id !== id));
+      setDocuments(prev => prev.map(d => d.folder_id === id ? { ...d, folder_id: null } : d));
   }
 
   const saveContent = async () => {
@@ -159,11 +197,15 @@ function App() {
           <div className='sidebar-component bg-[#1E1E1E]'>
             <SideBar
               documents={documents}
+              folders={folders}
               activeDocument={activeDocument}
               onSelectDocument={setActiveDocument}
               onNewDocument={createDocument}
               onRenameDocument={renameDocument}
               onDeleteDocument={deleteDocument}
+              onNewFolder={createFolder}
+              onRenameFolder={renameFolder}
+              onDeleteFolder={deleteFolder}
             />
           </div>
         )}
