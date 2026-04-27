@@ -39,7 +39,7 @@ export interface SidebarProps {
     onRenameFolder: (id: string, newName: string) => void;
     onDeleteFolder: (id: string) => void;
     onSelectDocument: (doc: MarkdownDocument) => void;
-    onNewDocument: () => void;
+    onNewDocument: (folderId: string | null) => void;
     onRenameDocument: (id: string, newTitle: string) => void;
     onDeleteDocument: (id: string) => void;
 }
