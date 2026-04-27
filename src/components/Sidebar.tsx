@@ -17,18 +17,22 @@ function FolderItem({
     onSelect,
     onRenameDocument,
     draggedDocId,
-    onMoveDocument
+    onMoveDocument,
+    onDragStart,
+    onDragEnd
 }: 
 {
     folder: Folder;
     documents: MarkdownDocument[];
     draggedDocId: string | null;
+    onDragStart: (id: string) => void;
+    onDragEnd: () => void;
     onRenameFolder: (id: string, newName: string) => void;
     onRenameDocument: (id: string, newTitle: string) => void;
     onDeleteFolder: (id: string) => void;
     onSelectDocument: (doc: MarkdownDocument) => void;
     onSelect: (id: string) => void;
-    onMoveDocument: (docId: string, folderId: string) => void;
+    onMoveDocument: (docId: string, folderId: string | null) => void;
     activeDocument: MarkdownDocument | null;
 }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -74,6 +78,9 @@ function FolderItem({
                     {documents.map(doc => (
                         <li
                             key={doc.id}
+                            draggable
+                            onDragStart={() => onDragStart(doc.id)}
+                            onDragEnd={onDragEnd}
                             onClick={() => onSelectDocument(doc)}
                             onDoubleClick={() => { setEditingId(doc.id); setEditingTitle(doc.title); }}
                             className={`my-2 cursor-pointer hover:text-[#b1ada1] ${activeDocument?.id === doc.id ? 'text-[#b1ada1]' : 'text-[#474747]'}`}
@@ -178,7 +185,11 @@ function SideBar({
                 </button>
             </div>
 
-            <ul className='text-[#b1ada1] my-8'>
+            <ul 
+                className='text-[#b1ada1] my-8'
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => { if (draggedDocId) onMoveDocument(draggedDocId, null); }}
+            >
                 {/* Root level docs (no folder) */}
                 {documents.filter(d => d.folder_id === null).map(doc => (
                     <li
@@ -216,6 +227,8 @@ function SideBar({
                         folder={folder}
                         documents={documents.filter(d => d.folder_id === folder.id)}
                         draggedDocId={draggedDocId}
+                        onDragStart={(id) => setDraggedDocId(id)}
+                        onDragEnd={() => setDraggedDocId(null)}
                         onMoveDocument={onMoveDocument}
                         onRenameFolder={onRenameFolder}
                         onRenameDocument={onRenameDocument}
