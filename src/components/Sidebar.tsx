@@ -7,21 +7,35 @@ import Sort from '../assets/icons/Sort.png';
 import Trash from '../assets/icons/Trash.png'
 import Settings from '../assets/icons/Settings.png';
 
-function FolderItem({ folder, documents, onRenameFolder, onDeleteFolder, onSelectDocument, activeDocument }: {
+function FolderItem({ 
+    folder, 
+    documents, 
+    onRenameFolder, 
+    onDeleteFolder, 
+    onSelectDocument, 
+    activeDocument, 
+    onSelect,
+    onRenameDocument
+}: 
+{
     folder: Folder;
     documents: MarkdownDocument[];
     onRenameFolder: (id: string, newName: string) => void;
+    onRenameDocument: (id: string, newTitle: string) => void;
     onDeleteFolder: (id: string) => void;
     onSelectDocument: (doc: MarkdownDocument) => void;
+    onSelect: (id: string) => void;
     activeDocument: MarkdownDocument | null;
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editingName, setEditingName] = useState(folder.name);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingTitle, setEditingTitle] = useState('');
 
     return (
         <li className='my-4 text-sm'>
-            <div className='flex items-center gap-2 cursor-pointer' onClick={() => setIsOpen(!isOpen)}>
+            <div className='flex items-center gap-2 cursor-pointer' onClick={() => { setIsOpen(!isOpen); onSelect(folder.id); }}>
                 <span className='text-[#474747]'>{isOpen ? '▾' : '▸'}</span>
                 {isEditing ? (
                     <input
@@ -52,9 +66,25 @@ function FolderItem({ folder, documents, onRenameFolder, onDeleteFolder, onSelec
                         <li
                             key={doc.id}
                             onClick={() => onSelectDocument(doc)}
+                            onDoubleClick={() => { setEditingId(doc.id); setEditingTitle(doc.title); }}
                             className={`my-2 cursor-pointer ${activeDocument?.id === doc.id ? 'text-[#e8e6e6]' : 'text-[#474747]'}`}
                         >
-                            {doc.title}
+                            {editingId === doc.id ? (
+                                <input
+                                    autoFocus
+                                    value={editingTitle}
+                                    onChange={(e) => setEditingTitle(e.target.value)}
+                                    onBlur={() => { onRenameDocument(doc.id, editingTitle); setEditingId(null); }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') { onRenameDocument(doc.id, editingTitle); setEditingId(null); }
+                                        if (e.key === 'Escape') { setEditingId(null); }
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className='bg-transparent border-b border-[#ff6a00] outline-none text-[#e8e6e6] w-full'
+                                />
+                            ) : (
+                                doc.title
+                            )}
                         </li>
                     ))}
                 </ul>
@@ -79,6 +109,7 @@ function SideBar({
 {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingTitle, setEditingTitle] = useState('');
+    const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
     return (
         <div className='px-[40px]'>
@@ -112,7 +143,7 @@ function SideBar({
                 />
             </div>
             <div className="flex justify-evenly items-center my-4">
-                <button className='cursor-pointer px-[6px]' onClick={onNewDocument}>
+                <button className='cursor-pointer px-[6px]' onClick={() => onNewDocument(selectedFolderId)}>
                     <img src={NewFile} alt="New File" />
                 </button>
                 <button className='cursor-pointer px-[6px]' onClick={onNewFolder}>
@@ -121,8 +152,18 @@ function SideBar({
                 <button className='cursor-pointer'>
                     <img src={Sort} alt="Sort Order" />
                 </button>
-                <button className='cursor-pointer px-[6px]' onClick={() => activeDocument && onDeleteDocument(activeDocument.id)}>
-                    <img src={Trash} alt="Delete Project" />
+                <button 
+                    className='cursor-pointer px-[6px]' 
+                    onClick={() => {
+                        if (selectedFolderId) {
+                            onDeleteFolder(selectedFolderId);
+                            setSelectedFolderId(null);
+                        } else if (activeDocument) {
+                            onDeleteDocument(activeDocument.id);
+                        }
+                    }}
+                >
+                    <img src={Trash} alt="Delete Item" />
                 </button>
             </div>
 
@@ -131,7 +172,7 @@ function SideBar({
                 {documents.filter(d => d.folder_id === null).map(doc => (
                     <li
                         key={doc.id}
-                        onClick={() => onSelectDocument(doc)}
+                        onClick={() => { onSelectDocument(doc); setSelectedFolderId(null); }}
                         onDoubleClick={() => { setEditingId(doc.id); setEditingTitle(doc.title); }}
                         className={`my-4 cursor-pointer text-sm ${activeDocument?.id === doc.id ? 'text-[#e8e6e6]' : ''}`}
                     >
@@ -161,9 +202,11 @@ function SideBar({
                         folder={folder}
                         documents={documents.filter(d => d.folder_id === folder.id)}
                         onRenameFolder={onRenameFolder}
+                        onRenameDocument={onRenameDocument}
                         onDeleteFolder={onDeleteFolder}
-                        onSelectDocument={onSelectDocument}
+                        onSelectDocument={(doc) => { onSelectDocument(doc); setSelectedFolderId(null); }}
                         activeDocument={activeDocument}
+                        onSelect={(id) => setSelectedFolderId(id)}
                     />
                 ))}
             </ul>
