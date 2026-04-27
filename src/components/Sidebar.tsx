@@ -15,16 +15,24 @@ function FolderItem({
     onSelectDocument, 
     activeDocument, 
     onSelect,
-    onRenameDocument
+    onRenameDocument,
+    draggedDocId,
+    onMoveDocument,
+    onDragStart,
+    onDragEnd
 }: 
 {
     folder: Folder;
     documents: MarkdownDocument[];
+    draggedDocId: string | null;
+    onDragStart: (id: string) => void;
+    onDragEnd: () => void;
     onRenameFolder: (id: string, newName: string) => void;
     onRenameDocument: (id: string, newTitle: string) => void;
     onDeleteFolder: (id: string) => void;
     onSelectDocument: (doc: MarkdownDocument) => void;
     onSelect: (id: string) => void;
+    onMoveDocument: (docId: string, folderId: string | null) => void;
     activeDocument: MarkdownDocument | null;
 }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +43,12 @@ function FolderItem({
 
     return (
         <li className='my-4 text-sm'>
-            <div className='flex items-center gap-2 cursor-pointer' onClick={() => { setIsOpen(!isOpen); onSelect(folder.id); }}>
+            <div 
+                className='flex items-center gap-2 cursor-pointer' 
+                onClick={() => { setIsOpen(!isOpen); onSelect(folder.id); }}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => { if (draggedDocId) onMoveDocument(draggedDocId, folder.id); }}
+            >
                 <span className='text-[#474747]'>{isOpen ? '▾' : '▸'}</span>
                 {isEditing ? (
                     <input
@@ -52,7 +65,7 @@ function FolderItem({
                     />
                 ) : (
                     <span
-                        className='text-[#e8e6e6]'
+                        className='text-[#474747] hover:text-[#b1ada1] cursor-pointer'
                         onDoubleClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                     >
                         {folder.name}
@@ -65,9 +78,12 @@ function FolderItem({
                     {documents.map(doc => (
                         <li
                             key={doc.id}
+                            draggable
+                            onDragStart={() => onDragStart(doc.id)}
+                            onDragEnd={onDragEnd}
                             onClick={() => onSelectDocument(doc)}
                             onDoubleClick={() => { setEditingId(doc.id); setEditingTitle(doc.title); }}
-                            className={`my-2 cursor-pointer ${activeDocument?.id === doc.id ? 'text-[#e8e6e6]' : 'text-[#474747]'}`}
+                            className={`my-2 cursor-pointer hover:text-[#b1ada1] ${activeDocument?.id === doc.id ? 'text-[#b1ada1]' : 'text-[#474747]'}`}
                         >
                             {editingId === doc.id ? (
                                 <input
@@ -80,7 +96,7 @@ function FolderItem({
                                         if (e.key === 'Escape') { setEditingId(null); }
                                     }}
                                     onClick={(e) => e.stopPropagation()}
-                                    className='bg-transparent border-b border-[#ff6a00] outline-none text-[#e8e6e6] w-full'
+                                    className='bg-transparent border-b border-[#ff6a00] outline-none text-[#b1ada1] w-full'
                                 />
                             ) : (
                                 doc.title
@@ -98,6 +114,7 @@ function SideBar({
     folders, 
     activeDocument, 
     onSelectDocument, 
+    onMoveDocument,
     onNewDocument, 
     onRenameDocument, 
     onDeleteDocument,
@@ -110,6 +127,7 @@ function SideBar({
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingTitle, setEditingTitle] = useState('');
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+    const [draggedDocId, setDraggedDocId] = useState<string | null>(null);
 
     return (
         <div className='px-[40px]'>
@@ -133,7 +151,7 @@ function SideBar({
                         "&.Mui-focused fieldset": { borderColor: "#ff6a00", },
                         },
                         "& label": {
-                            color: "#e8e6e6",
+                            color: "#b1ada1",
                             opacity: 1,
                         },
                         "& label.Mui-focused": {
@@ -167,14 +185,21 @@ function SideBar({
                 </button>
             </div>
 
-            <ul className='text-[#e8e6e6] my-8'>
+            <ul 
+                className='text-[#b1ada1] my-8'
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => { if (draggedDocId) onMoveDocument(draggedDocId, null); }}
+            >
                 {/* Root level docs (no folder) */}
                 {documents.filter(d => d.folder_id === null).map(doc => (
                     <li
                         key={doc.id}
+                        draggable
+                        onDragStart={() => setDraggedDocId(doc.id)}
+                        onDragEnd={() => setDraggedDocId(null)}
                         onClick={() => { onSelectDocument(doc); setSelectedFolderId(null); }}
                         onDoubleClick={() => { setEditingId(doc.id); setEditingTitle(doc.title); }}
-                        className={`my-4 cursor-pointer text-sm ${activeDocument?.id === doc.id ? 'text-[#e8e6e6]' : ''}`}
+                        className={`my-4 cursor-pointer text-sm hover:text-[#b1ada1] ${activeDocument?.id === doc.id ? 'text-[#b1ada1]' : 'text-[#474747]'}`}
                     >
                        {editingId === doc.id ? (
                             <input 
@@ -187,7 +212,7 @@ function SideBar({
                                     if (e.key === 'Escape') { setEditingId(null); }
                                 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className='bg-transparent border-b border-[#ff6a00] outline-none text-[#e8e6e6] w-full'
+                                className='bg-transparent border-b border-[#ff6a00] outline-none text-[#b1ada1] w-full'
                             />
                        ) : (
                             doc.title
@@ -201,6 +226,10 @@ function SideBar({
                         key={folder.id}
                         folder={folder}
                         documents={documents.filter(d => d.folder_id === folder.id)}
+                        draggedDocId={draggedDocId}
+                        onDragStart={(id) => setDraggedDocId(id)}
+                        onDragEnd={() => setDraggedDocId(null)}
+                        onMoveDocument={onMoveDocument}
                         onRenameFolder={onRenameFolder}
                         onRenameDocument={onRenameDocument}
                         onDeleteFolder={onDeleteFolder}

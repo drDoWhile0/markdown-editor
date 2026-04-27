@@ -97,6 +97,15 @@ function App() {
       }
   }
 
+  const moveDocument = async (docId: string, folderId: string | null) => {
+    await supabase
+      .from('documents')
+      .update({ folder_id: folderId })
+      .eq('id', docId);
+
+      setDocuments(prev => prev.map(d => d.id === docId ? { ...d, folder_id: folderId } : d));
+  }
+
   const createFolder = async() => {
     if (!session) return;
 
@@ -200,6 +209,7 @@ function App() {
               folders={folders}
               activeDocument={activeDocument}
               onSelectDocument={setActiveDocument}
+              onMoveDocument={moveDocument}
               onNewDocument={createDocument}
               onRenameDocument={renameDocument}
               onDeleteDocument={deleteDocument}
