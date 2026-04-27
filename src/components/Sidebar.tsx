@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { SidebarProps } from '../types';
+import type { SidebarProps, Folder, MarkdownDocument } from '../types';
 import TextField from '@mui/material/TextField';
 import NewFile from '../assets/icons/NewFile.png';
 import NewFolder from '../assets/icons/NewFolder.png';
@@ -7,7 +7,76 @@ import Sort from '../assets/icons/Sort.png';
 import Trash from '../assets/icons/Trash.png'
 import Settings from '../assets/icons/Settings.png';
 
-function SideBar({ documents, activeDocument, onSelectDocument, onNewDocument, onRenameDocument, onDeleteDocument }: SidebarProps) {
+function FolderItem({ folder, documents, onRenameFolder, onDeleteFolder, onSelectDocument, activeDocument }: {
+    folder: Folder;
+    documents: MarkdownDocument[];
+    onRenameFolder: (id: string, newName: string) => void;
+    onDeleteFolder: (id: string) => void;
+    onSelectDocument: (doc: MarkdownDocument) => void;
+    activeDocument: MarkdownDocument | null;
+}) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingName, setEditingName] = useState(folder.name);
+
+    return (
+        <li className='my-4 text-sm'>
+            <div className='flex items-center gap-2 cursor-pointer' onClick={() => setIsOpen(!isOpen)}>
+                <span className='text-[#474747]'>{isOpen ? '▾' : '▸'}</span>
+                {isEditing ? (
+                    <input
+                        autoFocus
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onBlur={() => { onRenameFolder(folder.id, editingName); setIsEditing(false); }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') { onRenameFolder(folder.id, editingName); setIsEditing(false); }
+                            if (e.key === 'Escape') { setIsEditing(false); }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className='bg-transparent border-b border-[#ff6a00] outline-none text-[#e8e6e6] w-full'
+                    />
+                ) : (
+                    <span
+                        className='text-[#e8e6e6]'
+                        onDoubleClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
+                    >
+                        {folder.name}
+                    </span>
+                )}
+            </div>
+
+            {isOpen && (
+                <ul className='ml-4 mt-2'>
+                    {documents.map(doc => (
+                        <li
+                            key={doc.id}
+                            onClick={() => onSelectDocument(doc)}
+                            className={`my-2 cursor-pointer ${activeDocument?.id === doc.id ? 'text-[#e8e6e6]' : 'text-[#474747]'}`}
+                        >
+                            {doc.title}
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </li>
+    );
+}
+
+function SideBar({ 
+    documents,
+    folders, 
+    activeDocument, 
+    onSelectDocument, 
+    onNewDocument, 
+    onRenameDocument, 
+    onDeleteDocument,
+    onNewFolder,
+    onRenameFolder,
+    onDeleteFolder
+}: SidebarProps) 
+
+{
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingTitle, setEditingTitle] = useState('');
 
@@ -46,7 +115,7 @@ function SideBar({ documents, activeDocument, onSelectDocument, onNewDocument, o
                 <button className='cursor-pointer px-[6px]' onClick={onNewDocument}>
                     <img src={NewFile} alt="New File" />
                 </button>
-                <button className='cursor-pointer px-[6px]'>
+                <button className='cursor-pointer px-[6px]' onClick={onNewFolder}>
                     <img src={NewFolder} alt="New Folder" />
                 </button>
                 <button className='cursor-pointer'>
@@ -58,7 +127,8 @@ function SideBar({ documents, activeDocument, onSelectDocument, onNewDocument, o
             </div>
 
             <ul className='text-[#e8e6e6] my-8'>
-                {documents.map((doc) => (
+                {/* Root level docs (no folder) */}
+                {documents.filter(d => d.folder_id === null).map(doc => (
                     <li
                         key={doc.id}
                         onClick={() => onSelectDocument(doc)}
@@ -82,6 +152,19 @@ function SideBar({ documents, activeDocument, onSelectDocument, onNewDocument, o
                             doc.title
                        )}
                     </li>
+                ))}
+
+                {/* Folders */}
+                {folders.map(folder => (
+                    <FolderItem 
+                        key={folder.id}
+                        folder={folder}
+                        documents={documents.filter(d => d.folder_id === folder.id)}
+                        onRenameFolder={onRenameFolder}
+                        onDeleteFolder={onDeleteFolder}
+                        onSelectDocument={onSelectDocument}
+                        activeDocument={activeDocument}
+                    />
                 ))}
             </ul>
 
