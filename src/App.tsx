@@ -55,12 +55,12 @@ function App() {
     loadDocument();
   }, [session]);
 
-  const createDocument = async () => {
+  const createDocument = async (folderId: string | null = null) => {
     if (!session) return;
 
     const { data, error } = await supabase
       .from('documents')
-      .insert({ user_id: session.user.id, title: 'Untitled', content: '' })
+      .insert({ user_id: session.user.id, title: 'Untitled', content: '', folder_id: folderId })
       .select()
       .single();
 
