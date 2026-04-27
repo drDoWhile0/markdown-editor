@@ -34,6 +34,10 @@ export interface Folder {
 export interface SidebarProps {
     documents: MarkdownDocument[];
     activeDocument: MarkdownDocument | null;
+    folders: Folder[];
+    onNewFolder: () => void;
+    onRenameFolder: (id: string, newName: string) => void;
+    onDeleteFolder: (id: string) => void;
     onSelectDocument: (doc: MarkdownDocument) => void;
     onNewDocument: () => void;
     onRenameDocument: (id: string, newTitle: string) => void;
