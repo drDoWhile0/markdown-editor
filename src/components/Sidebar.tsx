@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { SidebarProps, Folder, MarkdownDocument } from '../types';
-import TextField from '@mui/material/TextField';
+import SidebarSearch from './SidebarSearch';
 import NewFile from '../assets/icons/NewFile.png';
 import NewFolder from '../assets/icons/NewFolder.png';
 import Sort from '../assets/icons/Sort.png';
@@ -124,40 +124,27 @@ function SideBar({
 }: SidebarProps) 
 
 {
+    type SortOrder = 'default' | 'asc' | 'desc';
+    const [sortOrder, setSortOrder] = useState<SortOrder>('default');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingTitle, setEditingTitle] = useState('');
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
     const [draggedDocId, setDraggedDocId] = useState<string | null>(null);
 
+    const sortItems = <T extends { title?: string; name?: string }>(items: T[]): T[] => {
+        if (sortOrder === 'asc') return [...items].sort((a, b) => (a.title ?? a.name ?? '').localeCompare(b.title ?? b.name ?? ''));
+        if (sortOrder === 'desc') return [...items].sort((a, b) => (b.title ?? b.name ?? '').localeCompare(a.title ?? a.name ?? ''));
+        return items;
+    };
+
     return (
         <div className='px-[40px]'>
             <div className='sidebar-component__search justify-self-center my-6'>
-                <TextField 
-                    id='outlined-basic'
-                    variant='outlined'
-                    fullWidth
-                    label="Search"
-                    sx={{
-                        "& .MuiInputLabel-root:not(.MuiInputLabel-shrink)": {
-                            top: "50%",
-                            transform: "translate(14px, -50%)",
-                        },
-                        "& .MuiInputBase-input": {
-                            color: "#e8e6e6",
-                        },
-                        "& .MuiOutlinedInput-root": {
-                        "& fieldset": { borderColor: "#3d3d3d" },
-                        "&:hover fieldset": { borderColor: "#ff6a00"} ,
-                        "&.Mui-focused fieldset": { borderColor: "#ff6a00", },
-                        },
-                        "& label": {
-                            color: "#b1ada1",
-                            opacity: 1,
-                        },
-                        "& label.Mui-focused": {
-                            color: "#ff6a00",
-                        },
-                    }}
+                <SidebarSearch 
+                    documents={documents}
+                    folders={folders}
+                    activeDocument={activeDocument}
+                    onSelectDocument={onSelectDocument}
                 />
             </div>
             <div className="flex justify-evenly items-center my-4">
@@ -167,7 +154,10 @@ function SideBar({
                 <button className='cursor-pointer px-[6px]' onClick={onNewFolder}>
                     <img src={NewFolder} alt="New Folder" />
                 </button>
-                <button className='cursor-pointer'>
+                <button 
+                    className='cursor-pointer'
+                    onClick={() => setSortOrder(o => o === 'default' ? 'asc' : o === 'asc' ? 'desc' : 'default')}
+                >
                     <img src={Sort} alt="Sort Order" />
                 </button>
                 <button 
@@ -191,7 +181,7 @@ function SideBar({
                 onDrop={() => { if (draggedDocId) onMoveDocument(draggedDocId, null); }}
             >
                 {/* Root level docs (no folder) */}
-                {documents.filter(d => d.folder_id === null).map(doc => (
+                {sortItems(documents.filter(d => d.folder_id === null)).map(doc => (
                     <li
                         key={doc.id}
                         draggable
@@ -221,7 +211,7 @@ function SideBar({
                 ))}
 
                 {/* Folders */}
-                {folders.map(folder => (
+                {sortItems(folders).map(folder => (
                     <FolderItem 
                         key={folder.id}
                         folder={folder}
