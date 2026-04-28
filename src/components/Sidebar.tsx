@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { SidebarProps, Folder, MarkdownDocument } from '../types';
-import TextField from '@mui/material/TextField';
+import SidebarSearch from './SidebarSearch';
 import NewFile from '../assets/icons/NewFile.png';
 import NewFolder from '../assets/icons/NewFolder.png';
 import Sort from '../assets/icons/Sort.png';
@@ -140,32 +140,11 @@ function SideBar({
     return (
         <div className='px-[40px]'>
             <div className='sidebar-component__search justify-self-center my-6'>
-                <TextField 
-                    id='outlined-basic'
-                    variant='outlined'
-                    fullWidth
-                    label="Search"
-                    sx={{
-                        "& .MuiInputLabel-root:not(.MuiInputLabel-shrink)": {
-                            top: "50%",
-                            transform: "translate(14px, -50%)",
-                        },
-                        "& .MuiInputBase-input": {
-                            color: "#e8e6e6",
-                        },
-                        "& .MuiOutlinedInput-root": {
-                        "& fieldset": { borderColor: "#3d3d3d" },
-                        "&:hover fieldset": { borderColor: "#ff6a00"} ,
-                        "&.Mui-focused fieldset": { borderColor: "#ff6a00", },
-                        },
-                        "& label": {
-                            color: "#b1ada1",
-                            opacity: 1,
-                        },
-                        "& label.Mui-focused": {
-                            color: "#ff6a00",
-                        },
-                    }}
+                <SidebarSearch 
+                    documents={documents}
+                    folders={folders}
+                    activeDocument={activeDocument}
+                    onSelectDocument={onSelectDocument}
                 />
             </div>
             <div className="flex justify-evenly items-center my-4">
