@@ -11,7 +11,6 @@ function FolderItem({
     folder, 
     documents, 
     onRenameFolder, 
-    onDeleteFolder, 
     onSelectDocument, 
     activeDocument, 
     onSelect,
@@ -112,6 +111,7 @@ function FolderItem({
 function SideBar({ 
     documents,
     folders, 
+    userEmail,
     activeDocument, 
     onSelectDocument, 
     onMoveDocument,
@@ -120,7 +120,8 @@ function SideBar({
     onDeleteDocument,
     onNewFolder,
     onRenameFolder,
-    onDeleteFolder
+    onDeleteFolder,
+    onSignOut
 }: SidebarProps) 
 
 {
@@ -230,7 +231,14 @@ function SideBar({
                 ))}
             </ul>
 
-            <div>
+            <div className='flex item-center gap-3'>
+                <button
+                    onClick={onSignOut}
+                    className="w-8 h-8 rounded-full bg-[#ff6a00] text=[#e8e6e6] text-sm font-medium flex items-center justify-center cursor-pointer hover:opacity-80"
+                    title={userEmail}
+                >
+                    {userEmail.charAt(0).toUpperCase()}
+                </button>
                 <button className='cursor-pointer'>
                     <img src={Settings} alt="Settings" />
                 </button>
