@@ -35,6 +35,7 @@ export interface SidebarProps {
     documents: MarkdownDocument[];
     activeDocument: MarkdownDocument | null;
     folders: Folder[];
+    userEmail: string;
     onNewFolder: () => void;
     onRenameFolder: (id: string, newName: string) => void;
     onDeleteFolder: (id: string) => void;
@@ -43,4 +44,5 @@ export interface SidebarProps {
     onNewDocument: (folderId: string | null) => void;
     onRenameDocument: (id: string, newTitle: string) => void;
     onDeleteDocument: (id: string) => void;
+    onSignOut: () => void;
 }

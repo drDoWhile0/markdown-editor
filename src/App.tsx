@@ -173,6 +173,10 @@ function App() {
     view.focus();
   };
 
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  }
+
   useEffect(() => {
     if (timerRef.current !== null) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setParsedHTML(marked.parse(activeDocument?.content ?? '') as string), 300);
@@ -207,6 +211,7 @@ function App() {
             <SideBar
               documents={documents}
               folders={folders}
+              userEmail={session.user.email ?? ''}
               activeDocument={activeDocument}
               onSelectDocument={setActiveDocument}
               onMoveDocument={moveDocument}
@@ -216,6 +221,7 @@ function App() {
               onNewFolder={createFolder}
               onRenameFolder={renameFolder}
               onDeleteFolder={deleteFolder}
+              onSignOut={signOut}
             />
           </div>
         )}
