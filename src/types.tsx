@@ -36,6 +36,7 @@ export interface SidebarProps {
     activeDocument: MarkdownDocument | null;
     folders: Folder[];
     userEmail: string;
+    avatarUrl: string | null;
     onNewFolder: () => void;
     onRenameFolder: (id: string, newName: string) => void;
     onDeleteFolder: (id: string) => void;

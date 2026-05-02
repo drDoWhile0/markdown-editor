@@ -112,6 +112,7 @@ function SideBar({
     documents,
     folders, 
     userEmail,
+    avatarUrl,
     activeDocument, 
     onSelectDocument, 
     onMoveDocument,
@@ -234,11 +235,18 @@ function SideBar({
             <div className='flex item-center gap-3'>
                 <button
                     onClick={onSignOut}
-                    className="w-8 h-8 rounded-full bg-[#ff6a00] text=[#e8e6e6] text-sm font-medium flex items-center justify-center cursor-pointer hover:opacity-80"
+                    className='w-8 h-8 rounded-full overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-80'
                     title={userEmail}
                 >
-                    {userEmail.charAt(0).toUpperCase()}
+                    {avatarUrl ? (
+                        <img src={avatarUrl} alt="avatar" className='w-full h-full object-cover' />
+                    ) : (
+                        <span className='w-full h-full rounded-full bg-[#ff6a00] text-[#e8e6e6] text-sm font-medium flex items-center justify-center'>
+                            {userEmail.charAt(0).toUpperCase()}
+                        </span>
+                    )}
                 </button>
+                
                 <button className='cursor-pointer'>
                     <img src={Settings} alt="Settings" />
                 </button>

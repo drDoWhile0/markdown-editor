@@ -212,6 +212,7 @@ function App() {
               documents={documents}
               folders={folders}
               userEmail={session.user.email ?? ''}
+              avatarUrl={session.user.user_metadata?.avatar_url ?? null}
               activeDocument={activeDocument}
               onSelectDocument={setActiveDocument}
               onMoveDocument={moveDocument}
