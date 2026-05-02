@@ -23,6 +23,15 @@ function Auth() {
         }
     };
 
+    const signInWithGoogle = async () => {
+        await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+    }
+
     return (
         <div className='flex items-center justify-center h-screen bg-[#0d0d0d]'>
             <div className='bg-[#1E1E1E] p-10 rounded-md w-full max-w-md'>
@@ -56,7 +65,21 @@ function Auth() {
                         {isSignUp ? 'Sign in' : 'Sign up'}
                     </button>
                 </p>
+                
+                <div className='flex items-center gap-2 my-4'>
+                    <hr className='flex-1 border-[#3d3d3d]' />
+                    <span className='text-[#474747] text-sm'>or</span>
+                    <hr className='flex-1 border-[#3d3d3d]' />
+                </div>
+
+                <button
+                    onClick={signInWithGoogle}
+                    className='w-full py-2 px-4 border border-[#3d3d3d] rounded text-[#e8e6e6] hover:border-[#ff6a00] cursor-pointer'
+                >
+                    Continue with Google
+                </button>
             </div>
+
         </div>
     );
 }
