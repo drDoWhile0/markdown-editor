@@ -140,7 +140,7 @@ function SideBar({
     };
 
     return (
-        <div className='px-[40px]'>
+        <div className='px-[40px] flex flex-col h-full overflow-hidden'>
             <div className='sidebar-component__search justify-self-center my-6'>
                 <SidebarSearch 
                     documents={documents}
@@ -177,62 +177,64 @@ function SideBar({
                 </button>
             </div>
 
-            <ul 
-                className='text-[#b1ada1] my-8'
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => { if (draggedDocId) onMoveDocument(draggedDocId, null); }}
-            >
-                {/* Root level docs (no folder) */}
-                {sortItems(documents.filter(d => d.folder_id === null)).map(doc => (
-                    <li
-                        key={doc.id}
-                        draggable
-                        onDragStart={() => setDraggedDocId(doc.id)}
-                        onDragEnd={() => setDraggedDocId(null)}
-                        onClick={() => { onSelectDocument(doc); setSelectedFolderId(null); }}
-                        onDoubleClick={() => { setEditingId(doc.id); setEditingTitle(doc.title); }}
-                        className={`my-4 cursor-pointer text-sm hover:text-[#b1ada1] ${activeDocument?.id === doc.id ? 'text-[#b1ada1]' : 'text-[#474747]'}`}
-                    >
-                       {editingId === doc.id ? (
-                            <input 
-                                autoFocus
-                                value={editingTitle}
-                                onChange={(e) => setEditingTitle(e.target.value)}
-                                onBlur={() => { onRenameDocument(doc.id, editingTitle); setEditingId(null); }}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') { onRenameDocument(doc.id, editingTitle); setEditingId(null); }
-                                    if (e.key === 'Escape') { setEditingId(null); }
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                                className='bg-transparent border-b border-[#ff6a00] outline-none text-[#b1ada1] w-full'
-                            />
-                       ) : (
-                            doc.title
-                       )}
-                    </li>
-                ))}
+            <div className='flex-1 overflow-y-auto'>
+                <ul 
+                    className='text-[#b1ada1] my-8'
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => { if (draggedDocId) onMoveDocument(draggedDocId, null); }}
+                >
+                    {/* Root level docs (no folder) */}
+                    {sortItems(documents.filter(d => d.folder_id === null)).map(doc => (
+                        <li
+                            key={doc.id}
+                            draggable
+                            onDragStart={() => setDraggedDocId(doc.id)}
+                            onDragEnd={() => setDraggedDocId(null)}
+                            onClick={() => { onSelectDocument(doc); setSelectedFolderId(null); }}
+                            onDoubleClick={() => { setEditingId(doc.id); setEditingTitle(doc.title); }}
+                            className={`my-4 cursor-pointer text-sm hover:text-[#b1ada1] ${activeDocument?.id === doc.id ? 'text-[#b1ada1]' : 'text-[#474747]'}`}
+                        >
+                        {editingId === doc.id ? (
+                                <input 
+                                    autoFocus
+                                    value={editingTitle}
+                                    onChange={(e) => setEditingTitle(e.target.value)}
+                                    onBlur={() => { onRenameDocument(doc.id, editingTitle); setEditingId(null); }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') { onRenameDocument(doc.id, editingTitle); setEditingId(null); }
+                                        if (e.key === 'Escape') { setEditingId(null); }
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className='bg-transparent border-b border-[#ff6a00] outline-none text-[#b1ada1] w-full'
+                                />
+                        ) : (
+                                doc.title
+                        )}
+                        </li>
+                    ))}
 
-                {/* Folders */}
-                {sortItems(folders).map(folder => (
-                    <FolderItem 
-                        key={folder.id}
-                        folder={folder}
-                        documents={documents.filter(d => d.folder_id === folder.id)}
-                        draggedDocId={draggedDocId}
-                        onDragStart={(id) => setDraggedDocId(id)}
-                        onDragEnd={() => setDraggedDocId(null)}
-                        onMoveDocument={onMoveDocument}
-                        onRenameFolder={onRenameFolder}
-                        onRenameDocument={onRenameDocument}
-                        onDeleteFolder={onDeleteFolder}
-                        onSelectDocument={(doc) => { onSelectDocument(doc); setSelectedFolderId(null); }}
-                        activeDocument={activeDocument}
-                        onSelect={(id) => setSelectedFolderId(id)}
-                    />
-                ))}
-            </ul>
+                    {/* Folders */}
+                    {sortItems(folders).map(folder => (
+                        <FolderItem 
+                            key={folder.id}
+                            folder={folder}
+                            documents={documents.filter(d => d.folder_id === folder.id)}
+                            draggedDocId={draggedDocId}
+                            onDragStart={(id) => setDraggedDocId(id)}
+                            onDragEnd={() => setDraggedDocId(null)}
+                            onMoveDocument={onMoveDocument}
+                            onRenameFolder={onRenameFolder}
+                            onRenameDocument={onRenameDocument}
+                            onDeleteFolder={onDeleteFolder}
+                            onSelectDocument={(doc) => { onSelectDocument(doc); setSelectedFolderId(null); }}
+                            activeDocument={activeDocument}
+                            onSelect={(id) => setSelectedFolderId(id)}
+                        />
+                    ))}
+                </ul>
+            </div>
 
-            <div className='flex item-center gap-3'>
+            <div className='mt-auto flex items-center gap-3 mb-4 justify-between'>
                 <button
                     onClick={onSignOut}
                     className='w-8 h-8 rounded-full overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-80'
