@@ -193,8 +193,8 @@ function App() {
   if (!session) return <Auth />;
 
   return (
-    <>
-      <div className='bg-[#121212]'>
+    <div className='flex flex-col h-screen'>
+      <div className='bg-[#121212] flex-shrink-0'>
         <Toolbar 
           onClick={handleToolbarAction} 
           onSave={saveContent} 
@@ -204,7 +204,7 @@ function App() {
         />
       </div>
 
-      <div className='flex h-screen'>
+      <div className='flex flex-1 overflow-hidden'>
 
         {showSidebar && (
           <div className='sidebar-component bg-[#1E1E1E]'>
@@ -227,18 +227,18 @@ function App() {
           </div>
         )}
 
-        <div className={`${showPreview ? 'w-1/2' : 'w-full'} h-full bg-[#0d0d0d] px-[40px] py-[40px]`}>
+        <div className={`${showPreview ? 'w-1/2' : 'w-full'} h-full bg-[#0d0d0d] px-[40px] py-[40px] overflow-y-auto`}>
           <MarkdownEditor ref={editorRef} value={activeDocument?.content ?? ''} onChange={handleChange} />
         </div>
 
         {showPreview && (
-          <div className='w-1/2 h-full bg-[#121212] px-[40px] py-[40px]'>
+          <div className='w-1/2 h-full bg-[#121212] px-[40px] py-[40px] overflow-y-auto'>
             <Preview html={parsedHTML} />
           </div>
         )}
 
       </div>
-    </>
+    </div>
   )
 }
 
