@@ -45,5 +45,6 @@ export interface SidebarProps {
     onNewDocument: (folderId: string | null) => void;
     onRenameDocument: (id: string, newTitle: string) => void;
     onDeleteDocument: (id: string) => void;
+    onSwitchAccount: () => void;
     onSignOut: () => void;
 }
