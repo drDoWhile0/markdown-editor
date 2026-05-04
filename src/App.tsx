@@ -177,6 +177,17 @@ function App() {
     await supabase.auth.signOut();
   }
 
+  const switchAccount = async () => {
+    await supabase.auth.signOut();
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+        queryParams: { prompt: 'select_account' }
+      }
+    });
+  }
+
   useEffect(() => {
     if (timerRef.current !== null) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setParsedHTML(marked.parse(activeDocument?.content ?? '') as string), 300);
@@ -222,6 +233,7 @@ function App() {
               onNewFolder={createFolder}
               onRenameFolder={renameFolder}
               onDeleteFolder={deleteFolder}
+              onSwitchAccount={switchAccount}
               onSignOut={signOut}
             />
           </div>
