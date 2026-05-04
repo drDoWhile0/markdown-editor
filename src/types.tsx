@@ -14,6 +14,7 @@ export interface ToolbarProps {
     onSave: () => void;
     onTogglePreview: () => void;
     onToggleSidebar: () => void;
+    onDownload: () => void;
     saveStatus: SaveStatus;
 }
 
