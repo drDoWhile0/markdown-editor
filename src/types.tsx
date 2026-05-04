@@ -14,6 +14,7 @@ export interface ToolbarProps {
     onSave: () => void;
     onTogglePreview: () => void;
     onToggleSidebar: () => void;
+    onDownload: () => void;
     saveStatus: SaveStatus;
 }
 
@@ -45,5 +46,6 @@ export interface SidebarProps {
     onNewDocument: (folderId: string | null) => void;
     onRenameDocument: (id: string, newTitle: string) => void;
     onDeleteDocument: (id: string) => void;
+    onSwitchAccount: () => void;
     onSignOut: () => void;
 }

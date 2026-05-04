@@ -122,6 +122,7 @@ function SideBar({
     onNewFolder,
     onRenameFolder,
     onDeleteFolder,
+    onSwitchAccount,
     onSignOut
 }: SidebarProps) 
 
@@ -132,6 +133,7 @@ function SideBar({
     const [editingTitle, setEditingTitle] = useState('');
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
     const [draggedDocId, setDraggedDocId] = useState<string | null>(null);
+    const [showMenu, setShowMenu] = useState(false);
 
     const sortItems = <T extends { title?: string; name?: string }>(items: T[]): T[] => {
         if (sortOrder === 'asc') return [...items].sort((a, b) => (a.title ?? a.name ?? '').localeCompare(b.title ?? b.name ?? ''));
@@ -235,19 +237,38 @@ function SideBar({
             </div>
 
             <div className='mt-auto flex items-center gap-3 mb-4 justify-between'>
-                <button
-                    onClick={onSignOut}
-                    className='w-8 h-8 rounded-full overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-80'
-                    title={userEmail}
-                >
-                    {avatarUrl ? (
-                        <img src={avatarUrl} alt="avatar" className='w-full h-full object-cover' />
-                    ) : (
-                        <span className='w-full h-full rounded-full bg-[#ff6a00] text-[#e8e6e6] text-sm font-medium flex items-center justify-center'>
-                            {userEmail.charAt(0).toUpperCase()}
-                        </span>
+                <div className='relative'>
+                    <button
+                        onClick={() => setShowMenu(prev => !prev)}
+                        className='w-8 h-8 rounded-full overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-80'
+                        title={userEmail}
+                    >
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt="avatar" referrerPolicy="no-referrer" className='w-full h-full object-cover' />
+                        ) : (
+                            <span className='w-full h-full rounded-full bg-[#ff6a00] text-[#e8e6e6] text-sm font-medium flex items-center justify-center'>
+                                {userEmail.charAt(0).toUpperCase()}
+                            </span>
+                        )}
+                    </button>
+
+                    {showMenu && (
+                        <div className='absolute bottom-10 left-0 bg-[#2a2a2a] border border-[#3d3d3d] rounded shadow-lg w-40 py-1 z-10'>
+                            <button
+                                onClick={() => { onSignOut(); setShowMenu(false); }}
+                                className='w-full text-left px-4 py-2 text-sm text-[#b1ada1] hover:text-[#e8e6e6] hover:bg-[#3d3d3d] cursor-pointer'
+                            >
+                                Sign Out
+                            </button>
+                            <button
+                                onClick={() => { onSwitchAccount(); setShowMenu(false); }}
+                                className='w-full text-left px-4 py-2 text-sm text-[#b1ada1] hover:text-[#e8e6e6] hover:bg-[#3d3d3d] cursor-pointer'
+                            >
+                                Switch Accounts
+                            </button>
+                        </div>
                     )}
-                </button>
+                </div>
                 
                 <button className='cursor-pointer'>
                     <img src={Settings} alt="Settings" />

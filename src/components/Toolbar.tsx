@@ -7,7 +7,7 @@ import codeIcon from '../assets/icons/Code.png';
 import terminalIcon from '../assets/icons/Terminal.png';
 import previewIcon from '../assets/icons/Preview.png';
 
-function Toolbar({ onClick, onSave, onTogglePreview, onToggleSidebar, saveStatus }: ToolbarProps) {
+function Toolbar({ onClick, onSave, onTogglePreview, onToggleSidebar, saveStatus, onDownload }: ToolbarProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -45,7 +45,7 @@ function Toolbar({ onClick, onSave, onTogglePreview, onToggleSidebar, saveStatus
                     {saveStatus === 'saving' && <Loader2 className="animate-spin" />}
                     {saveStatus === 'saved' && <Check className="text-[#22c55e]" />}
                 </div>
-                <button className="bg-[#ff6a00] text-[#e8e6e6] py-[6px] px-[20px] rounded-sm cursor-pointer">Download</button>
+                <button onClick={onDownload} className="bg-[#ff6a00] text-[#e8e6e6] py-[6px] px-[20px] rounded-sm cursor-pointer">Download</button>
                 
             </div>
 

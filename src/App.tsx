@@ -173,8 +173,30 @@ function App() {
     view.focus();
   };
 
+  const switchAccount = async () => {
+    await supabase.auth.signOut();
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+        queryParams: { prompt: 'select_account' }
+      }
+    });
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut();
+  }
+
+  const handleDownload = () => {
+    if (!activeDocument) return;
+    const blob = new Blob([activeDocument.content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${activeDocument.title}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   useEffect(() => {
@@ -200,6 +222,7 @@ function App() {
           onSave={saveContent} 
           onTogglePreview={() => setShowPreview(prev => !prev)}
           onToggleSidebar={() => setShowSidebar(prev => !prev)}
+          onDownload={handleDownload}
           saveStatus={saveStatus} 
         />
       </div>
@@ -222,6 +245,7 @@ function App() {
               onNewFolder={createFolder}
               onRenameFolder={renameFolder}
               onDeleteFolder={deleteFolder}
+              onSwitchAccount={switchAccount}
               onSignOut={signOut}
             />
           </div>
