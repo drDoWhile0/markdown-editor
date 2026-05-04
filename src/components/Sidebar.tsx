@@ -122,6 +122,7 @@ function SideBar({
     onNewFolder,
     onRenameFolder,
     onDeleteFolder,
+    onSwitchAccount,
     onSignOut
 }: SidebarProps) 
 
@@ -243,7 +244,7 @@ function SideBar({
                         title={userEmail}
                     >
                         {avatarUrl ? (
-                            <img src={avatarUrl} alt="avatar" className='w-full h-full object-cover' />
+                            <img src={avatarUrl} alt="avatar" referrerPolicy="no-referrer" className='w-full h-full object-cover' />
                         ) : (
                             <span className='w-full h-full rounded-full bg-[#ff6a00] text-[#e8e6e6] text-sm font-medium flex items-center justify-center'>
                                 {userEmail.charAt(0).toUpperCase()}
@@ -260,7 +261,7 @@ function SideBar({
                                 Sign Out
                             </button>
                             <button
-                                onClick={() => { onSignOut(); setShowMenu(false); }}
+                                onClick={() => { onSwitchAccount(); setShowMenu(false); }}
                                 className='w-full text-left px-4 py-2 text-sm text-[#b1ada1] hover:text-[#e8e6e6] hover:bg-[#3d3d3d] cursor-pointer'
                             >
                                 Switch Accounts
